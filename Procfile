@@ -1,1 +1,1 @@
-web: java -jar build/libs/demo-0.1-all.jar
+web: java -jar target/demo-0.1-all.jar
