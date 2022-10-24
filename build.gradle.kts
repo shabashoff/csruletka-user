@@ -9,7 +9,7 @@ plugins {
 version = "0.1"
 group = "com.csruletka"
 
-val kotlinVersion=project.properties.get("kotlinVersion")
+val kotlinVersion = project.properties.get("kotlinVersion")
 repositories {
     mavenCentral()
 }
@@ -48,8 +48,17 @@ tasks {
             jvmTarget = "11"
         }
     }
+
+    jar {
+        manifest {
+            attributes["Main-Class"] = "com.csruletka.ApplicationKt"
+        }
+    }
+
 }
+
 graalvmNative.toolchainDetection.set(false)
+
 micronaut {
     runtime("netty")
     testRuntime("kotest")
@@ -58,6 +67,3 @@ micronaut {
         annotations("com.csruletka.*")
     }
 }
-
-
-

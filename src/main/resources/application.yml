@@ -1,6 +1,11 @@
 micronaut:
   application:
-    name: demo
+    name: micronautHerokuDemo
+  server:
+    port: ${PORT:8080}
+    cors:
+      enabled: true
+
 netty:
   default:
     allocator:
