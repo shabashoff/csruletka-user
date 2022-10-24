@@ -54,7 +54,9 @@ tasks {
             attributes["Main-Class"] = "com.csruletka.ApplicationKt"
         }
     }
-
+    register("stage"){
+        dependsOn(clean, build)
+    }
 }
 
 graalvmNative.toolchainDetection.set(false)
