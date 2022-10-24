@@ -55,7 +55,8 @@ tasks {
         }
     }
     register("stage"){
-        dependsOn(clean, build)
+        dependsOn(build)
+
     }
 }
 
