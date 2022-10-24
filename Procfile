@@ -1,0 +1,1 @@
+web: java -jar libs/demo-0.1-all.jar
