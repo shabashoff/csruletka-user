@@ -10,8 +10,13 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.async
 import kotlinx.coroutines.reactive.PublisherCoroutine
 import kotlinx.coroutines.reactive.publish
+import kotlinx.coroutines.reactive.publishInternal
+import kotlinx.coroutines.reactor.flux
+import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.runBlocking
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Signal.next
 
 @Singleton
 class AuthProvider(
@@ -19,8 +24,7 @@ class AuthProvider(
 ) : AuthenticationProvider {
     override fun authenticate(httpRequest: HttpRequest<*>, authenticationRequest: AuthenticationRequest<*, *>): Publisher<AuthenticationResponse> {
         val headers = httpRequest.headers
-
-        return publish {
+        return mono {
             userService.loginUser(
                 SteamLoginRequest(
                     identity = authenticationRequest.identity as String,
@@ -31,7 +35,7 @@ class AuthProvider(
                     signed = headers.get("signed")!!,
                 )
             )
-            println("hui")
+
             AuthenticationResponse.success(authenticationRequest.identity as String, listOf())
         }
     }

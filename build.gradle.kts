@@ -21,6 +21,7 @@ dependencies {
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.security:micronaut-security-jwt")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
+    implementation("io.micronaut.reactor:micronaut-reactor")
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -30,7 +31,7 @@ dependencies {
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
 
