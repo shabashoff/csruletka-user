@@ -25,18 +25,21 @@ class AuthProvider(
     override fun authenticate(httpRequest: HttpRequest<*>, authenticationRequest: AuthenticationRequest<*, *>): Publisher<AuthenticationResponse> {
         val headers = httpRequest.headers
         return mono {
-            userService.loginUser(
-                SteamLoginRequest(
-                    identity = authenticationRequest.identity as String,
-                    sig = authenticationRequest.secret as String,
-                    returnTo = headers.get("return_to")!!,
-                    responseNonce = headers.get("response_nonce")!!,
-                    assocHandle = headers.get("assoc_handle")!!,
-                    signed = headers.get("signed")!!,
+            if (userService.loginUser(
+                    SteamLoginRequest(
+                        identity = authenticationRequest.identity as String,
+                        sig = authenticationRequest.secret as String,
+                        returnTo = headers.get("return_to")!!,
+                        responseNonce = headers.get("response_nonce")!!,
+                        assocHandle = headers.get("assoc_handle")!!,
+                        signed = headers.get("signed")!!,
+                    )
                 )
-            )
-
-            AuthenticationResponse.success(authenticationRequest.identity as String, listOf())
+            ) {
+                AuthenticationResponse.success(authenticationRequest.identity as String, listOf())
+            } else {
+                AuthenticationResponse.failure()
+            }
         }
     }
 }
