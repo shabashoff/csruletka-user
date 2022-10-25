@@ -36,7 +36,7 @@ class AuthProvider(
                     )
                 )
             ) {
-                AuthenticationResponse.success(authenticationRequest.identity as String, listOf())
+                AuthenticationResponse.success(authenticationRequest.identity as String)
             } else {
                 AuthenticationResponse.failure()
             }

@@ -14,7 +14,6 @@ class UserService(
         "openid.ns" to "http://specs.openid.net/auth/2.0",
         "openid.mode" to "check_authentication",
         "openid.op_endpoint" to "https://steamcommunity.com/openid/login",
-        "openid.op_endpoint" to "https://steamcommunity.com/openid/login",
     )
 
     suspend fun loginUser(steamLoginRequest: SteamLoginRequest): Boolean {
@@ -25,18 +24,19 @@ class UserService(
                 it["openid.sig"] = steamLoginRequest.sig
                 it["openid.signed"] = steamLoginRequest.signed
                 it["openid.return_to"] = steamLoginRequest.returnTo
+                it["openid.assoc_handle"] = steamLoginRequest.assocHandle
                 it["openid.response_nonce"] = steamLoginRequest.responseNonce
             }
         )
         println(response)
 
-        val isLogin = getResponseResult(response)
+        /*val isLogin = getResponseResult(response)
 
         if (isLogin){
            updateUserData()
-        }
+        }*/
 
-        return isLogin
+        return getResponseResult(response)
     }
 
     private suspend fun updateUserData(){
