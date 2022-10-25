@@ -5,6 +5,14 @@ micronaut:
     port: ${PORT:8080}
     cors:
       enabled: true
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: '2fvU4pXoPGbiKFEdiAQKnOUEFDPTKSAMP9ClNkOaChcC954jGGwHIEfpqRf6yMhEqG4vYilczceTLc7S02C4JAlnzpLq7sTQdwvO'
 
 netty:
   default:
