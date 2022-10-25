@@ -9,10 +9,23 @@ micronaut:
     authentication: bearer
     token:
       jwt:
+        generator:
+          access-token:
+            expiration: 2_592_000
         signatures:
           secret:
             generator:
               secret: '2fvU4pXoPGbiKFEdiAQKnOUEFDPTKSAMP9ClNkOaChcC954jGGwHIEfpqRf6yMhEqG4vYilczceTLc7S02C4JAlnzpLq7sTQdwvO'
+
+datasources:
+  default:
+    url: jdbc:postgresql://ec2-54-228-32-29.eu-west-1.compute.amazonaws.com:5432/d94qhqjh3oi5qu
+    driverClassName: org.postgresql.Driver
+    schema: csruletka
+    username: 'cexrvrxiycxhtc'
+    password: 'dc52fbb57000d4f772a0995e6e6ec7c74b14790569fb1be44c4c98bc7c929c56'
+    minPoolSize: 1
+    maxPoolSize: 10
 
 netty:
   default:
