@@ -1,6 +1,5 @@
 package com.csruletka.client
 
-import com.csruletka.dto.steam.SteamPlayers
 import com.csruletka.dto.steam.SteamPlayersResponse
 import retrofit2.http.GET
 import retrofit2.http.Query

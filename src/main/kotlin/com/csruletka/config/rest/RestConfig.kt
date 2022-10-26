@@ -1,5 +1,6 @@
 package com.csruletka.config.rest
 
+import com.csruletka.client.CsGoMarketClient
 import com.csruletka.client.SteamApiClient
 import com.csruletka.client.SteamOpenidClient
 import com.google.gson.GsonBuilder
@@ -35,12 +36,25 @@ class RestConfig {
             .build()
             .create(SteamApiClient::class.java)
 
+    @Singleton
+    fun csGoMarketClient(): CsGoMarketClient =
+        Retrofit.Builder()
+            .baseUrl("https://market.csgo.com/")
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().setFieldNamingStrategy { it.name.lowercase() }.create()
+                )
+            )
+            .client(simpleClient())
+            .build()
+            .create(CsGoMarketClient::class.java)
+
     private fun simpleClient(): OkHttpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().also {
-                    it.setLevel(HttpLoggingInterceptor.Level.BODY)
+                    it.setLevel(HttpLoggingInterceptor.Level.BASIC)
                 }
             )
             .build()
