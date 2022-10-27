@@ -10,14 +10,17 @@ import io.micronaut.websocket.annotation.OnOpen
 import io.micronaut.websocket.annotation.ServerWebSocket
 import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 private val logger = LoggerFactory.getLogger(UserService::class.java)
 
 @Secured(SecurityRule.IS_ANONYMOUS)
 @ServerWebSocket(value = "/ws/game/ruletka")
 class RuletkaWS(
-    private val ruletkaService: RuletkaService
+    private val ruletkaService: RuletkaService,
 ) {
+
     @OnOpen
     fun onOpen(
         session: WebSocketSession?
@@ -29,7 +32,7 @@ class RuletkaWS(
 
 
     @OnMessage
-    fun onMessage(message:String, session: WebSocketSession?): Publisher<String>? {
+    fun onMessage(message: String, session: WebSocketSession?): Publisher<String>? {
         logger.info("Message: $message ")
         return null
     }
@@ -42,5 +45,6 @@ class RuletkaWS(
         ruletkaService.removeSession(session!!)
         return null
     }
+
 
 }

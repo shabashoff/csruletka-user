@@ -26,6 +26,6 @@ class SteamUserInfo(
     var inventory: List<SteamItem>? = null
 ) {
     fun calcPrice() {
-        inventoryPriceAmount = inventory?.sumOf { it.price ?: 0.0 }
+        inventoryPriceAmount = inventory?.sumOf { it.price!! * it.amount!! }
     }
 }

@@ -15,6 +15,7 @@ class TestController(
 ) {
     @Get("load")
     suspend fun getUserInfo() {
+        userService.updateUserData("76561199004803730")
         userService.updateUserData("76561198094451823")
     }
 }

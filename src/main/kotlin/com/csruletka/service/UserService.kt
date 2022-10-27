@@ -98,6 +98,8 @@ class UserService(
         itemsMap.values.forEach { it.marketHashName?.let { name -> it.price = csGoPriceService.getPrice(name) } }
 
         return itemsMap.values.toList()
+            .filter { it.price != null }
+            .sortedByDescending { it.price }
     }
 
     private fun getResponseResult(resp: String) = resp.contains("true")
