@@ -1,4 +1,4 @@
-package com.csruletka.dto.steam
+package com.csruletka.dto.user
 
 class SteamUserInfo(
     var steamId: String? = null,
@@ -21,5 +21,11 @@ class SteamUserInfo(
     var gameId: String? = null,
     var locCountryCode: String? = null,
     var locStateCode: String? = null,
-    var locCityId: Int? = null
-)
+    var locCityId: Int? = null,
+    var inventoryPriceAmount: Double? = null,
+    var inventory: List<SteamItem>? = null
+) {
+    fun calcPrice() {
+        inventoryPriceAmount = inventory?.sumOf { it.price ?: 0.0 }
+    }
+}

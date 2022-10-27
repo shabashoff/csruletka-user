@@ -1,6 +1,6 @@
 package com.csruletka.config
 
-import com.csruletka.dto.steam.SteamUserInfo
+import com.csruletka.dto.user.SteamUserInfo
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.core.convert.ConversionContext

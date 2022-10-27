@@ -1,14 +1,15 @@
 package com.csruletka.service
 
 import com.csruletka.client.SteamApiClient
+import com.csruletka.client.SteamClient
 import com.csruletka.client.SteamOpenidClient
 import com.csruletka.dto.steam.SteamLoginRequest
-import com.csruletka.dto.steam.SteamUserInfo
+import com.csruletka.dto.user.SteamUserInfo
+import com.csruletka.dto.user.SteamItem
 import com.csruletka.dto.user.User
 import com.csruletka.repository.UserRepository
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.inject.Singleton
-import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 
@@ -16,14 +17,15 @@ private val logger = LoggerFactory.getLogger(UserService::class.java)
 
 const val API_KEY = "C1F16DE7E69F7DE3D9F14EB09306F95A"
 const val JSON = "json"
-
-private val objectMapper: ObjectMapper = ObjectMapper()
+const val CSGO_GAME_ID = "730"
 
 @Singleton
 class UserService(
+    private val steamClient: SteamClient,
     private val steamOpenidClient: SteamOpenidClient,
     private val steamApiClient: SteamApiClient,
     private val userRepository: UserRepository,
+    private val csGoPriceService: CsGoPriceService,
 ) {
     private val steamAuthMap: Map<String, String> = mapOf(
         "openid.ns" to "http://specs.openid.net/auth/2.0",
@@ -55,10 +57,10 @@ class UserService(
         } else null
     }
 
-    fun getUserInfoById(id: String): Mono<SteamUserInfo> = userRepository.findById(id).map { objectMapper.readValue(it.steamInfo, SteamUserInfo::class.java) }
+    fun getUserInfoById(id: String): Mono<SteamUserInfo> = userRepository.findById(id).mapNotNull { it.steamInfo }
 
 
-    private suspend fun updateUserData(userId: String) {
+    suspend fun updateUserData(userId: String) {
         logger.info("Start update user data $userId")
 
         val steamPlayersResponse = steamApiClient.getUserSummary(
@@ -67,19 +69,35 @@ class UserService(
             userId
         )
 
-        println(
-            steamPlayersResponse
-        )
-
         userRepository.update(
             User().apply {
                 id = userId
-                steamInfo = objectMapper.writeValueAsString(steamPlayersResponse.response?.players?.get(0))
+                steamInfo = steamPlayersResponse.response?.players?.get(0)?.also {
+                    it.inventory = getInventory(userId)
+                    it.calcPrice()
+                }
+
             }
-        ).onErrorComplete {
-            logger.error(it.message)
-            true
-        }.awaitSingle()
+        ).awaitSingleOrNull()
+    }
+
+    private suspend fun getInventory(userId: String): List<SteamItem> {
+        val inventory = steamClient.getInventory(userId, CSGO_GAME_ID)
+        val itemsMap = HashMap<String, SteamItem>()
+
+        inventory.assets!!.forEach {
+            if (itemsMap.contains(it.classId)) itemsMap[it.classId]!!.amount = itemsMap[it.classId]!!.amount!! + 1
+            else itemsMap[it.classId!!] = SteamItem(id = it.classId, amount = it.amount?.toInt())
+        }
+        inventory.descriptions!!.forEach {
+            itemsMap[it.classId]?.let { item ->
+                item.marketHashName = it.marketHashName
+                item.iconUrl = it.iconUrl
+            }
+        }
+        itemsMap.values.forEach { it.marketHashName?.let { name -> it.price = csGoPriceService.getPrice(name) } }
+
+        return itemsMap.values.toList()
     }
 
     private fun getResponseResult(resp: String) = resp.contains("true")

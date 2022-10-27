@@ -1,6 +1,6 @@
 package com.csruletka.controller
 
-import com.csruletka.dto.steam.SteamUserInfo
+import com.csruletka.dto.user.SteamUserInfo
 import com.csruletka.service.UserService
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get

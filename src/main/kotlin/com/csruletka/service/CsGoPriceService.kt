@@ -12,12 +12,14 @@ private val priceMap: HashMap<String, Double> = HashMap()
 class CsGoPriceService(
     private val csGoMarketClient: CsGoMarketClient,
 ) {
-
     init {
         reloadPrices()
     }
 
-    fun reloadPrices() {
+    fun getPrice(marketHashName: String) = priceMap[marketHashName]
+
+
+    private fun reloadPrices() {
         runBlocking {
             val pricesRub = csGoMarketClient.getPricesRub()
 

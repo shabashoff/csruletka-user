@@ -2,6 +2,7 @@ package com.csruletka.config.rest
 
 import com.csruletka.client.CsGoMarketClient
 import com.csruletka.client.SteamApiClient
+import com.csruletka.client.SteamClient
 import com.csruletka.client.SteamOpenidClient
 import com.google.gson.GsonBuilder
 import io.micronaut.context.annotation.Factory
@@ -22,6 +23,19 @@ class RestConfig {
             .client(simpleClient())
             .build()
             .create(SteamOpenidClient::class.java)
+
+    @Singleton
+    fun steamClient(): SteamClient =
+        Retrofit.Builder()
+            .baseUrl("https://steamcommunity.com/")
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().setFieldNamingStrategy { it.name.lowercase() }.create()
+                )
+            )
+            .client(simpleClient())
+            .build()
+            .create(SteamClient::class.java)
 
     @Singleton
     fun steamApiClient(): SteamApiClient =

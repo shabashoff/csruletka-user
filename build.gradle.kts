@@ -33,6 +33,7 @@ dependencies {
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("com.vladmihalcea:hibernate-types-52:2.20.0")
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
