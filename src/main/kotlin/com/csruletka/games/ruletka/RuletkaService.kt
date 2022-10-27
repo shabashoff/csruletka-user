@@ -50,6 +50,7 @@ class RuletkaService(
     fun addSession(webSocketSession: WebSocketSession) {
         wsSessions[webSocketSession.id] = webSocketSession
 
+        skinsInGame.forEach { webSocketSession.sendAsync(it) }
         sendMessage("users: " + wsSessions.count())
     }
 
@@ -65,6 +66,10 @@ class RuletkaService(
 
     private fun startRuletka() {
         val winner = abs(random.nextInt()) % skinsInGame.sumOf { it.ticketsCount }
+
+        timerBeforeStart = DEFAULT_TIME_TO_START
+        skinsInGame.clear()
+        lastSkinInGameUpdate = 0
 
         sendMessage("winner: $winner")
     }
