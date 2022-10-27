@@ -13,7 +13,6 @@ const val DEFAULT_TIME_TO_START = 60
 private val random = Random()
 
 private var timerBeforeStart: Int = DEFAULT_TIME_TO_START
-private var lastSkinInGameUpdate: Int = 0
 
 private var skinsInGame: MutableList<SkinsInGame> = Collections.synchronizedList(arrayListOf())
 
@@ -32,10 +31,6 @@ class RuletkaService(
         ) {
             if (isReadyForGame()) {
                 sendMessage("time: " + timerBeforeStart--)
-
-                while (lastSkinInGameUpdate < skinsInGame.size) {
-                    sendMessage(skinsInGame[lastSkinInGameUpdate++])
-                }
 
                 if (timerBeforeStart <= 0) {
                     startRuletka()
@@ -61,6 +56,8 @@ class RuletkaService(
     }
 
     fun addSkins(skinToAdd: SkinsInGame) {
+        sendMessage(skinToAdd)
+
         skinsInGame.add(skinToAdd)
     }
 
@@ -69,7 +66,6 @@ class RuletkaService(
 
         timerBeforeStart = DEFAULT_TIME_TO_START
         skinsInGame.clear()
-        lastSkinInGameUpdate = 0
 
         sendMessage("winner: $winner")
     }
