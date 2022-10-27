@@ -73,7 +73,7 @@ class RuletkaService(
     private fun isReadyForGame(): Boolean {
         if (timerBeforeStart != DEFAULT_TIME_TO_START) return true
 
-        return skinsInGame.size > 2
+        return skinsInGame.size > 1
     }
 
     private fun sendMessage(obj: Any) {
