@@ -89,7 +89,7 @@ class RuletkaService(
         val winner = (abs(random.nextInt()) % (curTicketFrom.get() - 1)) + 1
         var winUser : SkinsInGame? = null
         for (skins in skinsInGame) {
-            if (skins.ticketsFrom >= winner && skins.ticketsTo <= winner){
+            if (skins.ticketsFrom <= winner && skins.ticketsTo >= winner){
                 winUser = skins
             }
         }
