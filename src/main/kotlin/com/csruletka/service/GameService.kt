@@ -15,12 +15,10 @@ class GameService(
         val user = userRepository.findById(userId).awaitSingle()
 
         ruletkaService.addSkins(
-            SkinsInGame(
-                user.id!!,
-                user.steamInfo!!.inventoryPriceAmount!!,
-                (user.steamInfo!!.inventoryPriceAmount!! * 10).toInt(),
-                user.steamInfo!!.inventory!!
-            )
+            user.id!!,
+            user.steamInfo!!.personaName!!,
+            user.steamInfo!!.avatarMedium!!,
+            user.steamInfo!!.inventory!!
         )
     }
 }
