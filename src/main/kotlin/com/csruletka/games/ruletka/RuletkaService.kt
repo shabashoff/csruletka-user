@@ -1,5 +1,6 @@
 package com.csruletka.games.ruletka
 
+import com.csruletka.dto.games.ruletka.GameCommand
 import com.csruletka.dto.games.ruletka.SkinsInGame
 import com.csruletka.dto.user.SteamItem
 import io.micronaut.websocket.WebSocketSession
@@ -34,7 +35,7 @@ class RuletkaService(
             1000L
         ) {
             if (isReadyForGame()) {
-                sendMessage("time: " + timerBeforeStart--)
+                sendMessage(GameCommand("time", timerBeforeStart--))
 
                 if (timerBeforeStart <= 0) {
                     startRuletka()
@@ -42,7 +43,7 @@ class RuletkaService(
                 }
             }
 
-            sendMessage("time: $timerBeforeStart")
+            sendMessage(GameCommand("time", timerBeforeStart))
         }
     }
 
@@ -50,13 +51,13 @@ class RuletkaService(
         wsSessions[webSocketSession.id] = webSocketSession
 
         skinsInGame.forEach { webSocketSession.sendAsync(it) }
-        sendMessage("users: " + wsSessions.count())
+        sendMessage(GameCommand("users", wsSessions.count()))
     }
 
     fun removeSession(webSocketSession: WebSocketSession) {
         wsSessions.remove(webSocketSession.id)
 
-        sendMessage("users: " + wsSessions.count())
+        sendMessage(GameCommand("users", wsSessions.count()))
     }
 
     fun addSkins(
@@ -80,16 +81,16 @@ class RuletkaService(
             skins
         )
 
-        sendMessage(skinToAdd)
+        sendMessage(GameCommand("addSkins", skinToAdd))
 
         skinsInGame.add(skinToAdd)
     }
 
     private fun startRuletka() {
         val winner = (abs(random.nextInt()) % (curTicketFrom.get() - 1)) + 1
-        var winUser : SkinsInGame? = null
+        var winUser: SkinsInGame? = null
         for (skins in skinsInGame) {
-            if (skins.ticketsFrom <= winner && skins.ticketsTo >= winner){
+            if (skins.ticketsFrom <= winner && skins.ticketsTo >= winner) {
                 winUser = skins
             }
         }
@@ -98,8 +99,8 @@ class RuletkaService(
         timerBeforeStart = DEFAULT_TIME_TO_START
         skinsInGame.clear()
 
-        sendMessage("winner: $winner")
-        sendMessage("winnUser: $winUser")
+        sendMessage(GameCommand("winner", winner))
+        sendMessage(GameCommand("winnUser", winUser))
     }
 
     private fun isReadyForGame(): Boolean {
@@ -108,9 +109,9 @@ class RuletkaService(
         return skinsInGame.size > 1
     }
 
-    private fun sendMessage(obj: Any) {
+    private fun <T> sendMessage(gameCommand: GameCommand<T>) {
         wsSessions.forEach {
-            it.value.sendAsync(obj)
+            it.value.sendAsync(gameCommand)
         }
     }
 }
