@@ -50,7 +50,7 @@ class RuletkaService(
     fun addSession(webSocketSession: WebSocketSession) {
         wsSessions[webSocketSession.id] = webSocketSession
 
-        skinsInGame.forEach { webSocketSession.sendAsync(it) }
+        skinsInGame.forEach { webSocketSession.sendAsync(GameCommand("addSkins", it)) }
         sendMessage(GameCommand("users", wsSessions.count()))
     }
 
