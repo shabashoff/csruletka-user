@@ -11,6 +11,7 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -123,6 +124,7 @@ class RuletkaService(
                 winnerTicket = winTicket
                 winner = winUser
                 users = skinsInGame.toList()
+                createdDateTime = LocalDateTime.now()
             }
         ).awaitSingleOrNull()
     }

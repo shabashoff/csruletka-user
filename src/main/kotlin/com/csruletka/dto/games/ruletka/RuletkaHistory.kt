@@ -1,7 +1,6 @@
 package com.csruletka.dto.games.ruletka
 
 import com.vladmihalcea.hibernate.type.json.JsonType
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.time.LocalDateTime
@@ -28,8 +27,6 @@ class RuletkaHistory {
     @Column(name = "users", nullable = false)
     var users: List<SkinsInGame>? = null
 
-
-    @CreationTimestamp
     @Column(name = "created_date_time", nullable = false)
     var createdDateTime: LocalDateTime? = null
 }
