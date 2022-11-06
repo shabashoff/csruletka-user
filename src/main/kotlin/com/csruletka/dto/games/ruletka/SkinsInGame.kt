@@ -1,6 +1,6 @@
 package com.csruletka.dto.games.ruletka
 
-import com.csruletka.dto.user.SteamItem
+import com.csruletka.dto.user.UserInventoryItem
 
 data class SkinsInGame(
     val userId: String,
@@ -9,5 +9,5 @@ data class SkinsInGame(
     val priceSum: Double,
     val ticketsFrom: Int,
     val ticketsTo: Int,
-    val skins: List<SteamItem>
+    val skins: List<UserInventoryItem>
 )

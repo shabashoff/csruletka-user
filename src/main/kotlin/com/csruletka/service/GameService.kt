@@ -1,6 +1,7 @@
 package com.csruletka.service
 
 import com.csruletka.dto.games.ruletka.RuletkaHistory
+import com.csruletka.dto.user.UserInventoryItem
 import com.csruletka.dto.user.UserItemToAddDto
 import com.csruletka.games.ruletka.RuletkaService
 import com.csruletka.repository.RuletkaHistoryRepository
@@ -12,17 +13,33 @@ import reactor.core.publisher.Flux
 @Singleton
 class GameService(
     private val ruletkaService: RuletkaService,
+    private val csGoPriceService: CsGoPriceService,
     private val ruletkaHistoryRepository: RuletkaHistoryRepository,
     private val userRepository: UserRepository
 ) {
     suspend fun ruletkaAddSkins(userId: String, skins: List<UserItemToAddDto>) {
-        val user = userRepository.findById(userId).awaitSingle()
+        val user = csGoPriceService.addPriceToUser(
+            userRepository.findById(userId).awaitSingle()
+        )
+
+        val inventoryMap = user.inventory.associateBy { it.id }?.toMutableMap()
+        val skinsToSend = arrayListOf<UserInventoryItem>()
+
+
+        skins.forEach {
+            if (inventoryMap.contains(it.id)) {
+                skinsToSend.add(inventoryMap.remove(it.id)!!)
+            }else{
+                throw IllegalArgumentException("Cannot find item in user skins")
+            }
+        }
+
 
         ruletkaService.addSkins(
             user.id!!,
             user.steamInfo!!.personaName!!,
             user.steamInfo!!.avatarMedium!!,
-            user.steamInfo!!.inventory!!
+            skinsToSend
         )
     }
 

@@ -24,7 +24,7 @@ class CsGoPriceService(
             it.price = getPriceByMarketName(it.marketHashName!!)
         }*/ // TODO: rework
 
-        user.inventory?.forEach {
+        user.inventory.forEach {
             it.price = getPriceByMarketName(it.marketHashName!!)
         }
 

@@ -20,5 +20,5 @@ class User {
 
     @Type(type = "json")
     @Column(name = "inventory", nullable = true)
-    var inventory: MutableList<UserInventoryItem>? = null
+    var inventory: MutableList<UserInventoryItem> = arrayListOf()
 }

@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 class UserInventoryItem (
     var id: String,
-    var amount: Int,
+    var steamId: String,
     var marketHashName: String? = null,
     var iconUrl: String? = null,
     var price: Double? = null,

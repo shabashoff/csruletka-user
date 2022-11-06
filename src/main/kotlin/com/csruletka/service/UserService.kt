@@ -14,6 +14,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
+import java.util.*
 
 private val logger = LoggerFactory.getLogger(UserService::class.java)
 
@@ -95,15 +96,14 @@ class UserService(
 
         userRepository.update(
             user.also {
-                if (it.inventory == null) it.inventory = arrayListOf()
 
-                it.inventory?.addAll(
+                it.inventory.addAll(
                     userItemToAdd.map {
                         if (mapInventoryId?.contains(it.id) == true) {
                             val steamItem = mapInventoryId[it.id]!!
                             UserInventoryItem(
-                                id = it.id,
-                                amount = it.amount,
+                                id = UUID.randomUUID().toString(),
+                                steamId = it.id,
                                 marketHashName = steamItem.marketHashName,
                                 iconUrl = steamItem.iconUrl,
                                 lockedUntil = LocalDateTime.now().plusDays(7)

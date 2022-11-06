@@ -5,15 +5,14 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.time.LocalDateTime
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
+import javax.persistence.*
 
 
 @Entity(name = "ruletka_history")
 @TypeDef(name = "json", typeClass = JsonType::class)
 class RuletkaHistory {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     var id: Long? = null
 

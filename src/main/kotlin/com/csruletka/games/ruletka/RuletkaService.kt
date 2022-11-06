@@ -3,10 +3,12 @@ package com.csruletka.games.ruletka
 import com.csruletka.dto.games.ruletka.GameCommand
 import com.csruletka.dto.games.ruletka.RuletkaHistory
 import com.csruletka.dto.games.ruletka.SkinsInGame
-import com.csruletka.dto.user.SteamItem
+import com.csruletka.dto.user.UserInventoryItem
 import com.csruletka.repository.RuletkaHistoryRepository
+import com.csruletka.repository.UserRepository
 import io.micronaut.websocket.WebSocketSession
 import jakarta.inject.Singleton
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -29,7 +31,8 @@ private val wsSessions: ConcurrentHashMap<String, WebSocketSession> = Concurrent
 
 @Singleton
 class RuletkaService(
-    private val ruletkaHistoryRepository: RuletkaHistoryRepository
+    private val ruletkaHistoryRepository: RuletkaHistoryRepository,
+    private val userRepository: UserRepository
 ) {
 
 
@@ -72,9 +75,9 @@ class RuletkaService(
         userId: String,
         userName: String,
         avatar: String,
-        skins: List<SteamItem>
+        skins: List<UserInventoryItem>
     ) {
-        val skinsSum = skins.sumOf { it.amount!! * it.price!! }
+        val skinsSum = skins.sumOf { it.price!! }
         val ticketsCount = (skinsSum * 10).toInt()
         val ticketFrom = curTicketFrom.getAndAdd(ticketsCount)
         val ticketTo = ticketFrom + ticketsCount - 1
@@ -104,6 +107,7 @@ class RuletkaService(
         }
 
         saveHistory(winner, winUser!!)
+        sendSkinsToWinner(winUser)
 
         curTicketFrom.set(DEFAULT_TICKET_FROM)
         timerBeforeStart = DEFAULT_TIME_TO_START
@@ -121,6 +125,14 @@ class RuletkaService(
                 users = skinsInGame.toList()
             }
         ).awaitSingleOrNull()
+    }
+
+    private suspend fun sendSkinsToWinner(winUser: SkinsInGame) {
+        val user = userRepository.findById(winUser.userId).awaitSingle()
+
+        user.inventory.addAll(skinsInGame.flatMap { it.skins })
+
+        userRepository.save(user).awaitSingleOrNull()
     }
 
     private fun isReadyForGame(): Boolean {
