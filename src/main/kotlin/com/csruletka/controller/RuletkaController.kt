@@ -11,6 +11,7 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 import reactor.core.publisher.Flux
 import java.security.Principal
+import javax.validation.constraints.NotEmpty
 
 @Controller("game/ruletka")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -20,6 +21,7 @@ class RuletkaController(
     @Post("skin")
     suspend fun addSkins(
         @Body
+        @NotEmpty
         skins: List<UserItemToAddDto>,
         principal: Principal
     ) {
