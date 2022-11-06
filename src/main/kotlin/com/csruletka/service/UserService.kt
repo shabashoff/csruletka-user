@@ -105,7 +105,7 @@ class UserService(
                                 id = it.id,
                                 amount = it.amount,
                                 marketHashName = steamItem.marketHashName,
-                                iconUrl = steamItem.marketHashName,
+                                iconUrl = steamItem.iconUrl,
                                 lockedUntil = LocalDateTime.now().plusDays(7)
                             )
                         } else {
