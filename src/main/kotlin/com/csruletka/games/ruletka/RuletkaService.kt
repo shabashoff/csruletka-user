@@ -1,10 +1,14 @@
 package com.csruletka.games.ruletka
 
 import com.csruletka.dto.games.ruletka.GameCommand
+import com.csruletka.dto.games.ruletka.RuletkaHistory
 import com.csruletka.dto.games.ruletka.SkinsInGame
 import com.csruletka.dto.user.SteamItem
+import com.csruletka.repository.RuletkaHistoryRepository
 import io.micronaut.websocket.WebSocketSession
 import jakarta.inject.Singleton
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -19,11 +23,13 @@ private val random = Random()
 private var timerBeforeStart: Int = DEFAULT_TIME_TO_START
 private var curTicketFrom: AtomicInteger = AtomicInteger(DEFAULT_TICKET_FROM)
 
-private var skinsInGame: MutableList<SkinsInGame> = Collections.synchronizedList(arrayListOf())
+private val skinsInGame: MutableList<SkinsInGame> = Collections.synchronizedList(arrayListOf())
+
+private val wsSessions: ConcurrentHashMap<String, WebSocketSession> = ConcurrentHashMap()
 
 @Singleton
 class RuletkaService(
-    private val wsSessions: ConcurrentHashMap<String, WebSocketSession> = ConcurrentHashMap()
+    private val ruletkaHistoryRepository: RuletkaHistoryRepository
 ) {
 
 
@@ -34,16 +40,18 @@ class RuletkaService(
             0L,
             1000L
         ) {
-            if (isReadyForGame()) {
-                sendMessage(GameCommand("time", timerBeforeStart--))
+            runBlocking {
+                if (isReadyForGame()) {
+                    sendMessage(GameCommand("time", timerBeforeStart--))
 
-                if (timerBeforeStart <= 0) {
-                    startRuletka()
-                    timerBeforeStart = DEFAULT_TIME_TO_START
+                    if (timerBeforeStart <= 0) {
+                        startRuletka()
+                        timerBeforeStart = DEFAULT_TIME_TO_START
+                    }
                 }
-            }
 
-            sendMessage(GameCommand("time", timerBeforeStart))
+                sendMessage(GameCommand("time", timerBeforeStart))
+            }
         }
     }
 
@@ -86,7 +94,7 @@ class RuletkaService(
         skinsInGame.add(skinToAdd)
     }
 
-    private fun startRuletka() {
+    private suspend fun startRuletka() {
         val winner = (abs(random.nextInt()) % (curTicketFrom.get() - 1)) + 1
         var winUser: SkinsInGame? = null
         for (skins in skinsInGame) {
@@ -95,12 +103,24 @@ class RuletkaService(
             }
         }
 
+        saveHistory(winner, winUser!!)
+
         curTicketFrom.set(DEFAULT_TICKET_FROM)
         timerBeforeStart = DEFAULT_TIME_TO_START
         skinsInGame.clear()
 
         sendMessage(GameCommand("winner", winner))
         sendMessage(GameCommand("winnUser", winUser))
+    }
+
+    private suspend fun saveHistory(winTicket: Int, winUser: SkinsInGame) {
+        ruletkaHistoryRepository.save(
+            RuletkaHistory().apply {
+                winnerTicket = winTicket
+                winner = winUser
+                users = skinsInGame.toList()
+            }
+        ).awaitSingleOrNull()
     }
 
     private fun isReadyForGame(): Boolean {

@@ -4,14 +4,17 @@ import com.csruletka.client.SteamApiClient
 import com.csruletka.client.SteamClient
 import com.csruletka.client.SteamOpenidClient
 import com.csruletka.dto.steam.SteamLoginRequest
-import com.csruletka.dto.user.SteamUserInfo
 import com.csruletka.dto.user.SteamItem
 import com.csruletka.dto.user.User
+import com.csruletka.dto.user.UserInventoryItem
+import com.csruletka.dto.user.UserItemToAddDto
 import com.csruletka.repository.UserRepository
 import jakarta.inject.Singleton
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 private val logger = LoggerFactory.getLogger(UserService::class.java)
 
@@ -57,7 +60,7 @@ class UserService(
         } else null
     }
 
-    fun getUserInfoById(id: String): Mono<SteamUserInfo> = userRepository.findById(id).mapNotNull { it.steamInfo }
+    fun getUserInfoById(id: String): Mono<User> = userRepository.findById(id)
 
 
     suspend fun updateUserData(userId: String) {
@@ -81,6 +84,29 @@ class UserService(
         ).awaitSingleOrNull()
     }
 
+    suspend fun addInventory(userId: String, userItemToAdd: List<UserItemToAddDto>) {
+        val user = userRepository.findById(userId).awaitSingle()
+
+        //TODO: send trade offer
+
+
+        userRepository.update(
+            user.also {
+                if (it.inventory == null) it.inventory = arrayListOf()
+
+                it.inventory?.addAll(
+                    userItemToAdd.map {
+                        UserInventoryItem(
+                            id = it.id,
+                            amount = it.amount,
+                            lockedUntil = LocalDateTime.now().plusDays(7)
+                        )
+                    }
+                )
+            }
+        ).awaitSingleOrNull()
+    }
+
     private suspend fun getInventory(userId: String): List<SteamItem> {
         val inventory = steamClient.getInventory(userId, CSGO_GAME_ID)
         val itemsMap = HashMap<String, SteamItem>()
@@ -95,7 +121,7 @@ class UserService(
                 item.iconUrl = it.iconUrl
             }
         }
-        itemsMap.values.forEach { it.marketHashName?.let { name -> it.price = csGoPriceService.getPrice(name) } }
+        itemsMap.values.forEach { it.marketHashName?.let { name -> it.price = csGoPriceService.getPriceByMarketName(name) } }
 
         return itemsMap.values.toList()
             .filter { it.price != null }

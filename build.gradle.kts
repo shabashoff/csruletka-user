@@ -41,9 +41,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
-    // steam api lib
-    implementation("com.github.irasikhin:java-steam-client:59ad330c4c")
-
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")

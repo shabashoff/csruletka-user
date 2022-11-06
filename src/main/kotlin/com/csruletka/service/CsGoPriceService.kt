@@ -16,7 +16,7 @@ class CsGoPriceService(
         reloadPrices()
     }
 
-    fun getPrice(marketHashName: String) = priceMap[marketHashName]
+    fun getPriceByMarketName(marketHashName: String) = priceMap[marketHashName]
 
 
     private fun reloadPrices() {

@@ -19,13 +19,13 @@ micronaut:
 
 datasources:
   default:
-    url: jdbc:postgresql://ec2-54-228-32-29.eu-west-1.compute.amazonaws.com:5432/d94qhqjh3oi5qu
+    url: jdbc:postgresql://ec2-52-51-3-22.eu-west-1.compute.amazonaws.com:5432/d5rf4v27214i3i
     driverClassName: org.postgresql.Driver
     schema: csruletka
-    username: 'cexrvrxiycxhtc'
-    password: 'dc52fbb57000d4f772a0995e6e6ec7c74b14790569fb1be44c4c98bc7c929c56'
+    username: 'ileuvcyjricwtq'
+    password: 'b321a8548760bb0bf48afab2c4cc72c683e0d4a24c17aa8e43b7efeccfcd42ab'
     minPoolSize: 1
-    maxPoolSize: 10
+    maxPoolSize: 2
 
 netty:
   default:

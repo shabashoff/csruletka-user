@@ -1,19 +1,21 @@
 package com.csruletka.controller
 
-import com.csruletka.service.UserService
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 import java.security.Principal
 
-@Controller("skins")
+@Controller("task")
 @Secured(SecurityRule.IS_AUTHENTICATED)
-class SkinController(
-    private val userService: UserService
+class TaskController(
 ) {
-    @Get("info")
-    fun getSkinsInfo(principal: Principal){
+    @Get("all")
+    fun getAll(principal: Principal){
+    }
 
+    @Post("start")
+    fun start(principal: Principal){
     }
 }

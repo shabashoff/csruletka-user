@@ -18,7 +18,7 @@ class User {
     @Column(name = "steam_info", nullable = true)
     var steamInfo: SteamUserInfo? = null
 
-
-    //private val id: Long? = null
-    //private val
+    @Type(type = "json")
+    @Column(name = "inventory", nullable = true)
+    var inventory: MutableList<UserInventoryItem>? = null
 }
