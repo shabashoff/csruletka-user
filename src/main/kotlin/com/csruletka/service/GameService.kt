@@ -29,11 +29,16 @@ class GameService(
         skins.forEach {
             if (inventoryMap.contains(it.id)) {
                 skinsToSend.add(inventoryMap.remove(it.id)!!)
-            }else{
+            } else {
                 throw IllegalArgumentException("Cannot find item in user skins")
             }
         }
 
+        userRepository.save(
+            user.also {
+                it.inventory = inventoryMap.values.toMutableList()
+            }
+        ).awaitSingle()
 
         ruletkaService.addSkins(
             user.id!!,
