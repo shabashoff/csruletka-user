@@ -132,7 +132,7 @@ class RuletkaService(
 
         user.inventory.addAll(skinsInGame.flatMap { it.skins })
 
-        userRepository.save(user).awaitSingleOrNull()
+        userRepository.update(user).awaitSingleOrNull()
     }
 
     private fun isReadyForGame(): Boolean {
