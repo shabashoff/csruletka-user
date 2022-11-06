@@ -9,7 +9,6 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
-import reactor.core.publisher.Mono
 import java.security.Principal
 
 @Controller("user")
@@ -18,7 +17,7 @@ class UserController(
     private val userService: UserService
 ) {
     @Get("info")
-    fun getUserInfo(principal: Principal): Mono<User> = userService.getUserInfoById(principal.name)
+    suspend fun getUserInfo(principal: Principal): User = userService.getUserInfoById(principal.name)
 
     @Post("add-skin")
     suspend fun addSkins(

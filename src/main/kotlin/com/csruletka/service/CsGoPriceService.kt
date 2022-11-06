@@ -1,6 +1,7 @@
 package com.csruletka.service
 
 import com.csruletka.client.CsGoMarketClient
+import com.csruletka.dto.user.User
 import io.micronaut.context.annotation.Context
 import jakarta.inject.Singleton
 import kotlinx.coroutines.runBlocking
@@ -17,6 +18,19 @@ class CsGoPriceService(
     }
 
     fun getPriceByMarketName(marketHashName: String) = priceMap[marketHashName]
+
+    fun addPriceToUser(user: User): User {
+        /*user.steamInfo?.inventory?.forEach {
+            it.price = getPriceByMarketName(it.marketHashName!!)
+        }*/ // TODO: rework
+
+        user.inventory?.forEach {
+            it.price = getPriceByMarketName(it.marketHashName!!)
+        }
+
+
+        return user
+    }
 
 
     private fun reloadPrices() {

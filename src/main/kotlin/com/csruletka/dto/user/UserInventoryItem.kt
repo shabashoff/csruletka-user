@@ -7,5 +7,6 @@ class UserInventoryItem (
     var amount: Int,
     var marketHashName: String? = null,
     var iconUrl: String? = null,
+    var price: Double? = null,
     var lockedUntil: LocalDateTime
 )

@@ -13,7 +13,6 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
-import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 private val logger = LoggerFactory.getLogger(UserService::class.java)
@@ -60,7 +59,9 @@ class UserService(
         } else null
     }
 
-    fun getUserInfoById(id: String): Mono<User> = userRepository.findById(id)
+    suspend fun getUserInfoById(id: String): User = csGoPriceService.addPriceToUser(
+        userRepository.findById(id).awaitSingle()
+    )
 
 
     suspend fun updateUserData(userId: String) {
@@ -90,17 +91,26 @@ class UserService(
         //TODO: send trade offer
 
 
+        val mapInventoryId = user.steamInfo?.inventory?.associate { it.id to it }
+
         userRepository.update(
             user.also {
                 if (it.inventory == null) it.inventory = arrayListOf()
 
                 it.inventory?.addAll(
                     userItemToAdd.map {
-                        UserInventoryItem(
-                            id = it.id,
-                            amount = it.amount,
-                            lockedUntil = LocalDateTime.now().plusDays(7)
-                        )
+                        if (mapInventoryId?.contains(it.id) == true) {
+                            val steamItem = mapInventoryId[it.id]!!
+                            UserInventoryItem(
+                                id = it.id,
+                                amount = it.amount,
+                                marketHashName = steamItem.marketHashName,
+                                iconUrl = steamItem.marketHashName,
+                                lockedUntil = LocalDateTime.now().plusDays(7)
+                            )
+                        } else {
+                            throw IllegalArgumentException("User dont have this skin, update page")
+                        }
                     }
                 )
             }
@@ -121,7 +131,11 @@ class UserService(
                 item.iconUrl = it.iconUrl
             }
         }
-        itemsMap.values.forEach { it.marketHashName?.let { name -> it.price = csGoPriceService.getPriceByMarketName(name) } }
+        itemsMap.values.forEach {
+            it.marketHashName?.let { name ->
+                it.price = csGoPriceService.getPriceByMarketName(name)
+            }
+        }
 
         return itemsMap.values.toList()
             .filter { it.price != null }
