@@ -34,7 +34,7 @@ class GameService(
             }
         }
 
-        userRepository.save(
+        userRepository.update(
             user.also {
                 it.inventory = inventoryMap.values.toMutableList()
             }
