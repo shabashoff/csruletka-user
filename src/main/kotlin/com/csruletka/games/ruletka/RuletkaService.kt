@@ -72,6 +72,8 @@ class RuletkaService(
         sendMessage(GameCommand("users", wsSessions.count()))
     }
 
+    fun isUserInGame(userId: String) = skinsInGame.find { userId == it.userId } != null
+
     fun addSkins(
         userId: String,
         userName: String,

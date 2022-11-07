@@ -75,7 +75,7 @@ class UserService(
         )
 
         userRepository.update(
-            User().apply {
+            (userRepository.findById(userId).awaitSingleOrNull() ?: User()).apply {
                 id = userId
                 steamInfo = steamPlayersResponse.response?.players?.get(0)?.also {
                     it.inventory = getInventory(userId)
@@ -115,6 +115,16 @@ class UserService(
                 )
             }
         ).awaitSingleOrNull()
+    }
+
+
+    suspend fun getSkins(userId: String, skins: List<UserItemToAddDto>) {
+        val user = userRepository.findById(userId).awaitSingle()
+        val skins = user.removeSkins(skins.map { it.id })
+
+        userRepository.update(user).awaitSingleOrNull()
+
+        //TODO: send trade offer with skins
     }
 
     private suspend fun getInventory(userId: String): List<SteamItem> {

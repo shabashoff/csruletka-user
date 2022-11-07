@@ -1,5 +1,6 @@
 package com.csruletka.dto.user
 
+import com.csruletka.dto.task.TaskInProgress
 import com.vladmihalcea.hibernate.type.json.JsonType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
@@ -21,4 +22,25 @@ class User {
     @Type(type = "json")
     @Column(name = "inventory", nullable = true)
     var inventory: MutableList<UserInventoryItem> = arrayListOf()
+
+    @Type(type = "json")
+    @Column(name = "task", nullable = true)
+    var tasks: MutableList<TaskInProgress> = arrayListOf()
+
+    fun removeSkins(ids: List<String>): List<UserInventoryItem> {
+        val inventoryMap = inventory.associateBy { it.id }.toMutableMap()
+        val skinsToSend = arrayListOf<UserInventoryItem>()
+
+        ids.forEach {
+            if (inventoryMap.contains(it)) {
+                skinsToSend.add(inventoryMap.remove(it)!!)
+            } else {
+                throw IllegalArgumentException("Cannot find item in user skins")
+            }
+        }
+
+        inventory = inventoryMap.values.toMutableList()
+
+        return skinsToSend
+    }
 }

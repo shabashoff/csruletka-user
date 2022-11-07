@@ -1,7 +1,6 @@
 package com.csruletka.service
 
 import com.csruletka.dto.games.ruletka.RuletkaHistory
-import com.csruletka.dto.user.UserInventoryItem
 import com.csruletka.dto.user.UserItemToAddDto
 import com.csruletka.games.ruletka.RuletkaService
 import com.csruletka.repository.RuletkaHistoryRepository
@@ -22,23 +21,13 @@ class GameService(
             userRepository.findById(userId).awaitSingle()
         )
 
-        val inventoryMap = user.inventory.associateBy { it.id }?.toMutableMap()
-        val skinsToSend = arrayListOf<UserInventoryItem>()
-
-
-        skins.forEach {
-            if (inventoryMap.contains(it.id)) {
-                skinsToSend.add(inventoryMap.remove(it.id)!!)
-            } else {
-                throw IllegalArgumentException("Cannot find item in user skins")
-            }
+        if (ruletkaService.isUserInGame(userId)) {
+            throw IllegalStateException("You already in game bro!")
         }
 
-        userRepository.update(
-            user.also {
-                it.inventory = inventoryMap.values.toMutableList()
-            }
-        ).awaitSingle()
+        val skinsToSend = user.removeSkins(skins.map { it.id })
+
+        userRepository.update(user).awaitSingle()
 
         ruletkaService.addSkins(
             user.id!!,

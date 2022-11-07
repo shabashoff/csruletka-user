@@ -37,6 +37,6 @@ class UserController(
         inventory: List<UserItemToAddDto>,
         principal: Principal
     ) {
-
+        userService.getSkins(principal.name, inventory)
     }
 }
