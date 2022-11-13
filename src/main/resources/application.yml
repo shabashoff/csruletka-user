@@ -26,7 +26,8 @@ datasources:
     password: 'b321a8548760bb0bf48afab2c4cc72c683e0d4a24c17aa8e43b7efeccfcd42ab'
     minPoolSize: 1
     maxPoolSize: 2
-
+log4j:
+  rootLogger: debug,stdout
 netty:
   default:
     allocator:
